@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <title>Room Search</title>
+    </head>
+    <body>
+        <h1> Search Available Rooms</h1>
+
+        <form method="get" action="/search">
+            <label>City:</label>
+            <input type="text" name="city"><br><br>
+
+            <label> Capacity:</label>
+            <select name="Capacity">
+                <option value="">Any</option>
+                <option value="Single">Single</option>
+                <option value="Double">Double</option>
+                <option value="Triple">Triple</option>
+                <option value="Suite">Suite</option>
+                <option value="Family">Family</option>
+            </select><br><br>
+
+            <label>Lowest Price:</label>
+            <input type="number" name="minPrice"><br><br>
+
+            <label>Highest Price:</label>
+            <input type="number" name="maxprice"><br><br>
+
+            <button type="submit">Search</button>
+        </form>
+    </body>
+</html>

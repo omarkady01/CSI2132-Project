@@ -10,4 +10,9 @@ public class HomeController {
         return "index";
     }
 
+    @GetMapping("/search")
+    public String searchPage() {
+        return "search";
+    }
+
 }
