@@ -80,7 +80,7 @@ public class Room {
     }
 
     public void setHotelId(Integer id) {
-        this.hotelid = hotelid;
+        this.hotelId = id;
     }
 
     public void setRoomNumber(String number) {

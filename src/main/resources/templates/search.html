@@ -28,5 +28,31 @@
 
             <button type="submit">Search</button>
         </form>
+
+        <hr>
+
+        <h2>Search Results</h2>
+
+        <table border="1">
+            <tr>
+                <th>Room ID</th>
+                <th>Hotel ID</th>
+                <th>Room Number</th>
+                <th>Capacity</th>
+                <th>Price</th>
+                <th>View Type</th>
+                <th>Extendable</th>
+            </tr>
+
+            <tr th:each="room: ${rooms}">
+                <td th:text = "${room.roomId}"></td>
+                <td th:text = "${room.hotelId}"></td>
+                <td th:text = "${room.roomNumber}"></td>
+                <td th:text = "${room.capacity}"></td>
+                <td th:text = "${room.price}"></td>
+                <td th:text = "${room.viewType}"></td>
+                <td th:text = "${room.extendable}"></td>
+            </tr>
+        </table>
     </body>
 </html>
