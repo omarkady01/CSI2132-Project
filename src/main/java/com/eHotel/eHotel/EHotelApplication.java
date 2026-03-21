@@ -8,6 +8,8 @@ public class EHotelApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(EHotelApplication.class, args);
+		System.out.println("INITIALIZING");
+		
 	}
 
 }
