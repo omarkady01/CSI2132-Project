@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Quiz Results</title>
+</head>
+<body>
+
+<h1>Find your Room Match Below!</h1>
+
+<h3>Your Filters</h3>
+<ul>
+    <li>City: <span th:text="${searchFilter.city} ?: 'Any'"></span></li>
+    <li>Capacity: <span th:text="${searchFilter.capacity} ?: 'Any'"></span></li>
+    <li>Minimum Price: <span th:text="${searchFilter.minPrice} ?: 'Any'"></span></li>
+    <li>Maximum Price: <span th:text="${searchFilter.maxPrice} ?: 'Any'"></span></li>
+</ul>
+
+<table border="1">
+    <tr>
+        <th>Room ID</th>
+        <th>Hotel ID</th>
+        <th>Room Number</th>
+        <th>Capacity</th>
+        <th>Price</th>
+        <th>View Type</th>
+        <th>Extendable</th>
+    </tr>
+
+    <tr th:each="room : ${rooms}">
+        <td th:text="${room.roomId}"></td>
+        <td th:text="${room.hotelId}"></td>
+        <td th:text="${room.roomNumber}"></td>
+        <td th:text="${room.capacity}"></td>
+        <td th:text="${room.price}"></td>
+        <td th:text="${room.viewType}"></td>
+        <td th:text="${room.extendable}"></td>
+    </tr>
+</table>
+
+<br>
+<a href="/quiz/city">Start New Quiz</a>
+
+</body>
+</html>

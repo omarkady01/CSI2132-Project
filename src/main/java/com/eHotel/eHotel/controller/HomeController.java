@@ -6,6 +6,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import com.eHotel.eHotel.model.SearchFilter;
 import java.util.List;
+import org.springframework.web.bind.support.SessionStatus;
 
 @Controller
 @SessionAttributes("searchFilter")
@@ -111,23 +112,24 @@ public class HomeController {
         return "redirect:/quiz/results";
     }
 
-    /*@GetMapping("/search")
-    public String searchPage(@RequestParam(required = false) String city, @RequestParam(required = false) String capacity, @RequestParam(required = false) Double minPrice, @RequestParam(required = false) Double maxPrice, Model model) {
-
-        System.out.println("City: "+city);
-        System.out.println("Capacity: "+capacity);
-        System.out.println("Lowest Price: "+minPrice);
-        System.out.println("Highest Price: "+maxPrice);
-        List<Room> rooms;
-
-        if (capacity!=null && !capacity.isEmpty()) {
-            rooms = roomRepository.findByCapacity(capacity); //CAPACITY SPECIFIED BY USER
-        } else {
-            rooms = roomRepository.findAll(); //NO CAPACITY SPECIFIED, RETURNING ALL
-        }
-
+    @GetMapping("/quiz/results")
+    public String quizResults(@ModelAttribute("searchFilter") SearchFilter searchFilter, Model model) {
+        List<Room> rooms = roomRepository.searchRooms(searchFilter.getCity(), searchFilter.getCapacity(), searchFilter.getMinPrice(), searchFilter.getMaxPrice());
+        
         model.addAttribute("rooms", rooms);
-        return "search";
-    }*/
+        model.addAttribute("searchFilter", searchFilter);
+
+        return "quiz-results";
+    }
+
+    // RESETTING VALUES STORED IN THE SESSION
+
+    @GetMapping("/quiz/reset")
+    public String resetQuiz(SessionStatus sessionStatus) {
+        sessionStatus.setComplete();
+        return "redirect://quiz/city";
+    }
+
+
 
 }
