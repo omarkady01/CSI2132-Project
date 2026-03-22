@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <title>Room Search - Price Range</title>
+    </head>
+    <body>
+        <h1>Step 3: Choose Your Price Range</h1>
+        <p>What's your Budget!</p>
+
+        <form method="post" action="/quiz/price">
+            <label for="minPrice">Minimum Price:</label>
+            <input type="range" id="minPrice" name="minPrice" min="0" max="5000" step="50" value="0" oninput="minOutput.value = minPrice.value">
+            <output id="minOutput">0</output>
+            <br><br>
+
+            <label for="maxPrice">Maximum Price:</label>
+            <input type="range" id="maxPrice" name="maxPrice" min="0" max="5000" step="50" value="5000" oninput="maxOutput.value = maxPrice.value">
+            <output id="maxOutput">5000</output>
+            <br><br>
+
+            <button type="submit">See Your Results!</button>
+    
+        </form>
+        <br><br>
+
+        <form method="post" action="/quiz/price/skip">
+            <button type="submit">Skip</button>
+        </form>
+    </body>
+</html>

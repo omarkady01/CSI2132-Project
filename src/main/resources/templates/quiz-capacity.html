@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymleaf.org">
+    <head>
+        <title>Room Search - Capacity</title>
+    </head>
+    <body>
+        <h1>Step1 2: Choose Room Capacity</h1>
+        <p>Please Specify the Number of Guests!</p>
+
+        <form method="post" action="/quiz/capacity">
+            <select name="capacity" >
+                <option value="Single">Single</option>
+                <option value="Double">Double</option>
+                <option value="Triple">Triple</option>
+                <option value="Suite">Suite</option>
+                <option value="Family">Family</option>
+            </select><br><br>
+
+            <button type="submit">Next</button>
+        </form>
+
+        <form method="post" action="/quiz/capacity/skip">
+            <button type="submit">Skip</button>
+        </form>
+    
+    </body>
+</html>

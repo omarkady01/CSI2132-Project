@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <title>Room Search - City</title>
+    </head>
+    <body>
+        <h1>Step 1: Choose a City</h1>
+        <p>Which City Would you Like to Explore!</p>
+
+        <form method="post" action="/quiz/city">
+            <input type="text" name="city" placeholder="Enter city">
+            <br><br>
+            <button type="submit">Next</button>
+        </form>
+
+        <form method="post" action="/quiz/city/skip">
+            <button type="submit">Skip</button>
+        </form>
+
+
+    </body>
+</html>
