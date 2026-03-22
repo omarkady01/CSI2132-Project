@@ -35,6 +35,15 @@ public class HomeController {
     @PostMapping("/quiz/city")
     public String saveCity(@RequestParam String city, @ModelAttribute("searchFilter") SearchFilter searchFilter) {
         searchFilter.setCity(city);
+
+    System.out.println("After city step:");
+    System.out.println("City = " + searchFilter.getCity());
+    System.out.println("Capacity = " + searchFilter.getCapacity());
+    System.out.println("Min Price = " + searchFilter.getMinPrice());
+    System.out.println("Max Price = " + searchFilter.getMaxPrice());    
+
+
+
         return "redirect:/quiz/capacity";
     }
 
@@ -52,6 +61,13 @@ public class HomeController {
     @PostMapping("/quiz/capacity")
     public String saveCapacity(@RequestParam String capacity, @ModelAttribute("searchFilter") SearchFilter searchFilter) {
         searchFilter.setCapacity(capacity);
+
+    System.out.println("After capacity step:");
+    System.out.println("City = " + searchFilter.getCity());
+    System.out.println("Capacity = " + searchFilter.getCapacity());
+    System.out.println("Min Price = " + searchFilter.getMinPrice());
+    System.out.println("Max Price = " + searchFilter.getMaxPrice());
+
         return "redirect:/quiz/price";
     }
 
@@ -77,6 +93,14 @@ public class HomeController {
        
         searchFilter.setMinPrice(minPrice);
         searchFilter.setMaxPrice(maxPrice);
+
+    System.out.println("After price step:");
+    System.out.println("City = " + searchFilter.getCity());
+    System.out.println("Capacity = " + searchFilter.getCapacity());
+    System.out.println("Min Price = " + searchFilter.getMinPrice());
+    System.out.println("Max Price = " + searchFilter.getMaxPrice());
+
+
         return "redirect:/quiz/results";
     }
 
