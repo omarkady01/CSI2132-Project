@@ -1,6 +1,7 @@
 package com.eHotel.eHotel.model;
 import jakarta.persistence.*;
 
+
 @Entity
 @Table(name = "room")
 public class Room {
@@ -12,14 +13,23 @@ public class Room {
     @Column(name = "hotel_id")
     private Integer hotelId;
 
+    @Column(name = "hotel_name")
+    private String hotelName;
+
     @Column(name = "room_number")
     private String roomNumber;
 
-    @Column(name = "price") 
-    private Double price;
+    @Column(name = "city")
+    private String city;
+
+    @Column(name = "rating")
+    private Integer rating;
 
     @Column(name = "capacity")
     private String capacity;
+
+    @Column(name = "price") 
+    private Double price;
 
     @Column(name = "view_type")
     private String viewType;
@@ -73,6 +83,18 @@ public class Room {
         return isActive;
     }
 
+    public String getHotelName() {
+        return hotelName;
+    }
+
+    public String getCity() {
+        return city;
+    }
+
+    public Integer getRating() {
+        return rating;
+    }
+
     // SETTERS
 
     public void setRoomId(Integer id) {
@@ -109,6 +131,18 @@ public class Room {
 
     public void setIsActive(Boolean val) {
         this.isActive = val;
+    }
+
+    public void setHotelName(String name) {
+        this.hotelName = name;
+    }
+
+    public void setCity(String name) {
+        this.city = name;
+    }
+
+    public void setRating(Integer rating) {
+        this.rating = rating;
     }
 
 }

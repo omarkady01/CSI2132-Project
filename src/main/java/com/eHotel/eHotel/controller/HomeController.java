@@ -118,7 +118,6 @@ public class HomeController {
         
         model.addAttribute("rooms", rooms);
         model.addAttribute("searchFilter", searchFilter);
-
         return "quiz-results";
     }
 

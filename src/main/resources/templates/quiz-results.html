@@ -21,21 +21,31 @@
     <tr>
         <th>Room ID</th>
         <th>Hotel ID</th>
+        <th>Hotel Name</th>
         <th>Room Number</th>
+        <th>City</th>
+        <th>Rating</th>
         <th>Capacity</th>
         <th>Price</th>
         <th>View Type</th>
         <th>Extendable</th>
+        <th>Problems</th>
+        <th>Active</th>
     </tr>
 
     <tr th:each="room : ${rooms}">
         <td th:text="${room.roomId}"></td>
         <td th:text="${room.hotelId}"></td>
+        <td th:text="${room.hotelName}"></td>
         <td th:text="${room.roomNumber}"></td>
+        <td th:text="${room.city}"></td>
+        <td th:text="${room.rating}"></td>
         <td th:text="${room.capacity}"></td>
         <td th:text="${room.price}"></td>
         <td th:text="${room.viewType}"></td>
         <td th:text="${room.extendable}"></td>
+        <td th:text="${room.problems}"></td>
+        <td th:text="${room.isActive}"></td>
         
     </tr>
 </table>
