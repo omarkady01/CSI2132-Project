@@ -6,6 +6,9 @@ public class SearchFilter {
     private String capacity;
     private Double minPrice;
     private Double maxPrice;
+    private String checkInDate;
+    private String checkOutDate;
+    
 
     public SearchFilter() {
 
@@ -27,6 +30,14 @@ public class SearchFilter {
         return maxPrice;
     }
 
+    public String getCheckInDate() {
+        return checkInDate;
+    }
+
+    public String getCheckOutDate() {
+        return checkOutDate;
+    }
+
     public void setCity(String city) {
         this.city = normalizeString(city);
     }
@@ -41,6 +52,14 @@ public class SearchFilter {
 
     public void setMaxPrice(Double price) {
         this.maxPrice = price;
+    }
+
+    public void setCheckInDate(String date) {
+        this.checkInDate = normalizeString(date);
+    }
+
+    public void setCheckOutDate(String date) {
+        this.checkOutDate = normalizeString(date);
     }
 
     private String normalizeString(String value) {

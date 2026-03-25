@@ -102,19 +102,19 @@ public class HomeController {
     System.out.println("Max Price = " + searchFilter.getMaxPrice());
 
 
-        return "redirect:/quiz/results";
+        return "redirect:/quiz/dates";
     }
 
     @PostMapping("/quiz/price/skip")
     public String skipPriceRange(@ModelAttribute("searchFilter") SearchFilter searchFilter) {
         searchFilter.setMinPrice(null);
         searchFilter.setMaxPrice(null);
-        return "redirect:/quiz/results";
+        return "redirect:/quiz/dates";
     }
 
     @GetMapping("/quiz/results")
     public String quizResults(@ModelAttribute("searchFilter") SearchFilter searchFilter, Model model) {
-        List<Room> rooms = roomRepository.searchRooms(searchFilter.getCity(), searchFilter.getCapacity(), searchFilter.getMinPrice(), searchFilter.getMaxPrice());
+        List<Room> rooms = roomRepository.searchRooms(searchFilter.getCity(), searchFilter.getCapacity(), searchFilter.getMinPrice(), searchFilter.getMaxPrice(), searchFilter.getCheckInDate(), searchFilter.getCheckOutDate());
         
         model.addAttribute("rooms", rooms);
         model.addAttribute("searchFilter", searchFilter);
@@ -122,12 +122,32 @@ public class HomeController {
         return "quiz-results";
     }
 
+    @GetMapping("/quiz/dates")
+    public String datesStep(){
+        return "quiz-dates";
+    }
+
+    @PostMapping("/quiz/dates")
+    public String saveDates(@RequestParam String checkInDate, @RequestParam String checkOutDate, @ModelAttribute("searchFilter") SearchFilter searchFilter) {
+        searchFilter.setCheckInDate(checkInDate);
+        searchFilter.setCheckOutDate(checkOutDate);
+
+        return "redirect:/quiz/results";
+    }
+
+    @PostMapping("/quiz/dates/skip")
+    public String skipDates(@ModelAttribute("searchFilter") SearchFilter searchFilter) {
+        searchFilter.setCheckInDate(null);
+        searchFilter.setCheckOutDate(null);
+        return "redirect:/quiz/results";
+    }
+
     // RESETTING VALUES STORED IN THE SESSION
 
     @GetMapping("/quiz/reset")
     public String resetQuiz(SessionStatus sessionStatus) {
         sessionStatus.setComplete();
-        return "redirect://quiz/city";
+        return "redirect:/quiz/city";
     }
 
 

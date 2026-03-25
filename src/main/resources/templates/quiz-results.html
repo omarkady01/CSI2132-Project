@@ -13,6 +13,8 @@
     <li>Capacity: <span th:text="${searchFilter.capacity} ?: 'Any'"></span></li>
     <li>Minimum Price: <span th:text="${searchFilter.minPrice} ?: 'Any'"></span></li>
     <li>Maximum Price: <span th:text="${searchFilter.maxPrice} ?: 'Any'"></span></li>
+    <li>Check-in Date: <span th:text="${searchFilter.checkInDate} ?: 'Any'"></span></li>
+    <li>Check-out Date: <span th:text="${searchFilter.checkOutDate} ?: 'Any'"></span></li>
 </ul>
 
 <table border="1">
@@ -34,6 +36,7 @@
         <td th:text="${room.price}"></td>
         <td th:text="${room.viewType}"></td>
         <td th:text="${room.extendable}"></td>
+        
     </tr>
 </table>
 
