@@ -10,14 +10,15 @@
         <p>Saved capacity: <span th:text="${searchFilter.capacity} ?: 'Any'"></span></p>
         <p>Saved minimum price: <span th:text="${searchFilter.minPrice} ?: 'Any'"></span></p>
         <p>Saved maximum price: <span th:text="${searchFilter.maxPrice} ?: 'Any'"></span></p>
-
+        <p th:if="${errorMessage}" th:text="${errorMessage}" style="color:red; font-weight:bold;"></p>
+        
         <form method="post" action="/quiz/dates">
             <label for="Check in Date:"></label>
-            <input type="date" name="checkInDate" required>
+            <input type="date" name="checkInDate" th:attr="min=${today}" required>
             <br><br>
             
             <label>Check out Date:</label>
-            <input type="date" name="checkOutDate" required>
+            <input type="date" name="checkOutDate" th:attr="min=${today}" required>
             <br><br>
 
             <button type="submit">See Results</button>

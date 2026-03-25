@@ -123,12 +123,30 @@ public class HomeController {
     }
 
     @GetMapping("/quiz/dates")
-    public String datesStep(){
+    public String datesStep(Model model){
+        model.addAttribute("today", java.time.LocalDate.now().toString());
         return "quiz-dates";
     }
 
     @PostMapping("/quiz/dates")
-    public String saveDates(@RequestParam String checkInDate, @RequestParam String checkOutDate, @ModelAttribute("searchFilter") SearchFilter searchFilter) {
+    public String saveDates(@RequestParam String checkInDate, @RequestParam String checkOutDate, @ModelAttribute("searchFilter") SearchFilter searchFilter, Model model) {
+        
+        java.time.LocalDate today = java.time.LocalDate.now();
+        java.time.LocalDate checkIn = java.time.LocalDate.parse(checkInDate);
+        java.time.LocalDate checkOut = java.time.LocalDate.parse(checkOutDate);
+
+        if (checkIn.isBefore(today)) {
+            model.addAttribute("today", today.toString());
+            model.addAttribute("errorMessage", "Check in date Cannot be in the Past!");
+            return "quiz-dates";
+        }
+
+        if (checkOut.isBefore(checkIn)) {
+            model.addAttribute("today", today.toString());
+            model.addAttribute("errorMessage", "Check out Date Must be After Check in Date!");
+            return "quiz-dates";
+        }
+
         searchFilter.setCheckInDate(checkInDate);
         searchFilter.setCheckOutDate(checkOutDate);
 
