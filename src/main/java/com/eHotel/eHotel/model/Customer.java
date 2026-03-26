@@ -30,7 +30,7 @@ public class Customer {
 
     public Customer() {}
 
-    public Integer getCutomerId() {
+    public Integer getCustomerId() {
         return customerId;
     }
 

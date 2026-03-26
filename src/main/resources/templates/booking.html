@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xlmns:th="http://www.thymeleaf.org">
+    <head>
+        <title>Book Room</title>
+    </head>
+    <body>
+        <h1>Review & Continue with your Booking!</h1>
+        <h3>Selected Room</h3>
+        <p>Hotel Name: <span th:text = "${room.hotelName}"></span></p>
+        <p>City:: <span th:text = "${room.city}"></span></p>
+        <p>Room Number: <span th:text = "${room.roomNumber}"></span></p>
+        <p>Capacity: <span th:text = "${room.capacity}"></span></p>
+        <p>Price: <span th:text = "${room.price}"></span></p>
+
+        <h3>Details of your Stay</h3>
+        <p>Check in Date: <span th:text = "${searchFilter.checkInDate} ?: 'Not Selected'"></span></p>
+        <p>Check out Date: <span th:text = "${searchFilter.checkOutDate} ?: 'Not Selected'"></span></p>
+
+        <h3>Booker Details</h3>
+        <form method ="post" action="/booking/confirm">
+            <input type="hidden" name="roomId" th:value="${room.roomId}">
+
+            <label>Full Name:</label>
+            <input type="text" name="custName" required>
+            <br><br>
+
+            <label>Address:</label>
+            <input type="text" name="address" required>
+            <br><br>
+
+            <label>ID Type:</label>
+            <input type="text" name="idType" required>
+            <br><br>
+
+            <label>ID Number:</label>
+            <input type="text" name="idNumber" required>
+            <br><br>
+
+            <button type="submit">Confirm Booking Details!</button>
+        </form>
+    </body>
+</html>

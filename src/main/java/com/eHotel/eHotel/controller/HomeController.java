@@ -191,6 +191,38 @@ public class HomeController {
         return "booking";
     }
 
+    @PostMapping("/booking/confirm")
+    public String confirmBooking(@RequestParam Integer roomId, @RequestParam String custName, @RequestParam String address, @RequestParam String idType, @RequestParam String idNumber, @ModelAttribute("searchFilter") SearchFilter searchFilter, Model model) {
+
+        Optional<Customer> existingCustomer = customerRepository.findByIdNumber(idNumber);
+        Customer customer;
+
+        if (existingCustomer.isPresent()) {
+            customer = existingCustomer.get();
+        } else {
+            customer = new Customer();
+            customer.setCustName(custName);
+            customer.setAddress(address);
+            customer.setIdType(idType);
+            customer.setIdNumber(idNumber);
+            customer.setRegistrationDate(LocalDate.now());
+            customer = customerRepository.save(customer);
+        }
+
+        Booking booking = new Booking();
+        booking.setCustomerId(customer.getCustomerId());
+        booking.setRoomId(roomId);
+        booking.setStartDate(LocalDate.parse(searchFilter.getCheckInDate()));
+        booking.setEndDate(LocalDate.parse(searchFilter.getCheckOutDate()));
+        booking.setBookingDate(LocalDateTime.now());
+        booking.setStatus("Booked");
+        bookingRepository.save(booking);
+
+        model.addAttribute("message", "Booking Confirmed!, See you then :)");
+        return "booking-success";
+
+    }
+
 
 
 }
