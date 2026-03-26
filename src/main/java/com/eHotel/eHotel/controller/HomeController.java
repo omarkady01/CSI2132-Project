@@ -1,21 +1,28 @@
 package com.eHotel.eHotel.controller;
-import com.eHotel.eHotel.model.Room;
-import com.eHotel.eHotel.repo.RoomRepository;
+import com.eHotel.eHotel.repo.*;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import com.eHotel.eHotel.model.SearchFilter;
-import java.util.List;
+import java.util.*;
 import org.springframework.web.bind.support.SessionStatus;
+import com.eHotel.eHotel.model.*;
+import org.springframework.data.jpa.repository.JpaRepository;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Controller
 @SessionAttributes("searchFilter")
 public class HomeController {
 
     private final RoomRepository roomRepository;
+    private final CustomerRepository customerRepository;
+    private final BookingRepository bookingRepository;
 
-    public HomeController(RoomRepository roomRepository) {
+    public HomeController(RoomRepository roomRepository, CustomerRepository customerRepository, BookingRepository bookingRepository) {
         this.roomRepository = roomRepository;
+        this.customerRepository = customerRepository;
+        this.bookingRepository = bookingRepository;
     }
 
     @ModelAttribute("searchFilter")
@@ -165,6 +172,23 @@ public class HomeController {
     public String resetQuiz(SessionStatus sessionStatus) {
         sessionStatus.setComplete();
         return "redirect:/quiz/city";
+    }
+
+    // BOOKING HANDELING
+
+    @GetMapping("/booking")
+    public String bookingPage(@RequestParam Integer roomId, @ModelAttribute("searchFilter") SearchFilter searchFilter, Model model) {
+
+        Optional<Room> roomOptional = roomRepository.findById(roomId);
+
+        if(roomOptional.isEmpty()) {
+            return "redirect:/quiz/results";
+        }
+
+        model.addAttribute("room", roomOptional.get());
+        model.addAttribute("searchFilter", searchFilter);
+
+        return "booking";
     }
 
 

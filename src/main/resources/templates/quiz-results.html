@@ -31,6 +31,7 @@
         <th>Extendable</th>
         <th>Problems</th>
         <th>Active</th>
+        <th>Select Room</th>
     </tr>
 
     <tr th:each="room : ${rooms}">
@@ -46,6 +47,12 @@
         <td th:text="${room.extendable}"></td>
         <td th:text="${room.problems}"></td>
         <td th:text="${room.isActive}"></td>
+        <td> 
+            <form method="get" action="/booking">
+                <input type="hidden" name="roomId" id="${room.roomId}">
+                <button type="submit">Book Room!</button>
+            </form>
+        </td>
         
     </tr>
 </table>
