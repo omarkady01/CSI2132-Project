@@ -208,6 +208,17 @@ public class HomeController {
     @PostMapping("/booking/confirm")
     public String confirmBooking(@RequestParam Integer roomId, @RequestParam String custName, @RequestParam String address, @RequestParam String idType, @RequestParam String idNumber, @ModelAttribute("searchFilter") SearchFilter searchFilter, Model model) {
 
+        LocalDate checkIn;
+        LocalDate checkOut;
+
+        if(searchFilter.getCheckInDate() == null || searchFilter.getCheckOutDate() == null) {
+            checkIn = LocalDate.now();
+            checkOut = checkIn.plusDays(1);
+        } else {
+            checkIn = LocalDate.parse(searchFilter.getCheckInDate());
+            checkOut = LocalDate.parse(searchFilter.getCheckOutDate());
+        }
+
         Optional<Customer> existingCustomer = customerRepository.findByIdNumber(idNumber);
         Customer customer;
 
@@ -226,14 +237,14 @@ public class HomeController {
         Booking booking = new Booking();
         booking.setCustomerId(customer.getCustomerId());
         booking.setRoomId(roomId);
-        booking.setStartDate(LocalDate.parse(searchFilter.getCheckInDate()));
-        booking.setEndDate(LocalDate.parse(searchFilter.getCheckOutDate()));
+        booking.setStartDate(checkIn);
+        booking.setEndDate(checkOut);
         booking.setBookingDate(LocalDateTime.now());
         booking.setStatus("Booked");
         bookingRepository.save(booking);
 
-        model.addAttribute("message", "Booking Confirmed!, See you then :)");
-        return "booking-success";
+        model.addAttribute("message", "Booking Confirmed, Enjoy your Stay "+customer.getCustName()+"!");
+        return "booking-confirmed";
 
     }
 
