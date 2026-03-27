@@ -13,17 +13,20 @@ public class Room {
     @Column(name = "hotel_id")
     private Integer hotelId;
 
-    @Column(name = "hotel_name")
-    private String hotelName;
+    //@Column(name = "hotel_name")
+    //@Transient
+    //private String hotelName;
 
     @Column(name = "room_number")
     private String roomNumber;
 
-    @Column(name = "city")
-    private String city;
+    //@Column(name = "city")
+    //@Transient
+    //private String city;
 
-    @Column(name = "rating")
-    private Integer rating;
+    //@Column(name = "rating")
+    //@Transient
+    //private Integer rating;
 
     @Column(name = "capacity")
     private String capacity;
@@ -42,6 +45,11 @@ public class Room {
 
     @Column(name = "is_active")
     private Boolean isActive;
+
+    @ManyToOne
+    @JoinColumn(name = "hotel_id", insertable = false, updatable = false)
+    private Hotel hotel;
+
 
     public Room() {}
 
@@ -83,17 +91,17 @@ public class Room {
         return isActive;
     }
 
-    public String getHotelName() {
-        return hotelName;
-    }
+   // public String getHotelName() {
+      //  return hotelName;
+    //}
 
-    public String getCity() {
-        return city;
-    }
+    //public String getCity() {
+      //  return city;
+    //}
 
-    public Integer getRating() {
-        return rating;
-    }
+    //public Integer getRating() {
+      //  return rating;
+    //}
 
     // SETTERS
 
@@ -133,7 +141,7 @@ public class Room {
         this.isActive = val;
     }
 
-    public void setHotelName(String name) {
+   /*public void setHotelName(String name) {
         this.hotelName = name;
     }
 
@@ -143,6 +151,13 @@ public class Room {
 
     public void setRating(Integer rating) {
         this.rating = rating;
+    }*/
+
+    public Hotel getHotel() {
+        return hotel;
     }
 
+    public void setHotel(Hotel hotel) {
+        this.hotel = hotel;
+    }
 }

@@ -37,19 +37,19 @@
     <tr th:each="room : ${rooms}">
         <td th:text="${room.roomId}"></td>
         <td th:text="${room.hotelId}"></td>
-        <td th:text="${room.hotelName}"></td>
+        <td th:text="${room.hotel.hotelName}"></td>
         <td th:text="${room.roomNumber}"></td>
-        <td th:text="${room.city}"></td>
-        <td th:text="${room.rating}"></td>
+        <td th:text="${room.hotel.city}"></td>
+        <td th:text="${room.hotel.rating}"></td>
         <td th:text="${room.capacity}"></td>
         <td th:text="${room.price}"></td>
         <td th:text="${room.viewType}"></td>
         <td th:text="${room.extendable}"></td>
         <td th:text="${room.problems}"></td>
-        <td th:text="${room.isActive}"></td>
+        <td th:text="${room.isActive} ? 'Available' : 'Unavailable'"></td>
         <td> 
             <form method="get" action="/booking">
-                <input type="hidden" name="roomId" id="${room.roomId}">
+                <input type="hidden" name="roomId" th:value="${room.roomId}">
                 <button type="submit">Book Room!</button>
             </form>
         </td>

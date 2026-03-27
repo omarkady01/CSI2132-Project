@@ -6,8 +6,9 @@
     <body>
         <h1>Review & Continue with your Booking!</h1>
         <h3>Selected Room</h3>
-        <p>Hotel Name: <span th:text = "${room.hotelName}"></span></p>
-        <p>City:: <span th:text = "${room.city}"></span></p>
+        <p>Hotel Name: <span th:text = "${hotel.hotelName}"></span></p>
+        <p>City: <span th:text = "${hotel.city}"></span></p>
+        <p>Rating: <span th:text="${hotel.rating}"></span></p>
         <p>Room Number: <span th:text = "${room.roomNumber}"></span></p>
         <p>Capacity: <span th:text = "${room.capacity}"></span></p>
         <p>Price: <span th:text = "${room.price}"></span></p>

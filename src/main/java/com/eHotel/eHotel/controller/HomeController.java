@@ -10,6 +10,9 @@ import com.eHotel.eHotel.model.*;
 import org.springframework.data.jpa.repository.JpaRepository;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import com.eHotel.eHotel.model.Hotel;
+import com.eHotel.eHotel.repo.HotelRepository;
+
 
 @Controller
 @SessionAttributes("searchFilter")
@@ -18,11 +21,13 @@ public class HomeController {
     private final RoomRepository roomRepository;
     private final CustomerRepository customerRepository;
     private final BookingRepository bookingRepository;
+    private final HotelRepository hotelRepository;
 
-    public HomeController(RoomRepository roomRepository, CustomerRepository customerRepository, BookingRepository bookingRepository) {
+    public HomeController(RoomRepository roomRepository, CustomerRepository customerRepository, BookingRepository bookingRepository, HotelRepository hotelRepository) {
         this.roomRepository = roomRepository;
         this.customerRepository = customerRepository;
         this.bookingRepository = bookingRepository;
+        this.hotelRepository = hotelRepository;
     }
 
     @ModelAttribute("searchFilter")
@@ -185,8 +190,17 @@ public class HomeController {
             return "redirect:/quiz/results";
         }
 
-        model.addAttribute("room", roomOptional.get());
+        Room room = roomOptional.get();
+
+        Optional<Hotel> hotelOptional = hotelRepository.findById(room.getHotelId());
+
+        if (hotelOptional.isEmpty()) {
+            return "redirect:/quiz/results";
+        }
+
+        model.addAttribute("room", room);
         model.addAttribute("searchFilter", searchFilter);
+        model.addAttribute("hotel", hotelOptional.get());
 
         return "booking";
     }
