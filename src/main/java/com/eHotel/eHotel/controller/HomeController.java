@@ -219,6 +219,7 @@ public class HomeController {
             checkOut = LocalDate.parse(searchFilter.getCheckOutDate());
         }
 
+
         Optional<Customer> existingCustomer = customerRepository.findByIdNumber(idNumber);
         Customer customer;
 
@@ -234,6 +235,10 @@ public class HomeController {
             customer = customerRepository.save(customer);
         }
 
+        model.addAttribute("customerName", customer.getCustName());
+        model.addAttribute("checkInDate", checkIn.toString());
+        model.addAttribute("checkOutDate", checkOut.toString());
+
         Booking booking = new Booking();
         booking.setCustomerId(customer.getCustomerId());
         booking.setRoomId(roomId);
@@ -243,7 +248,27 @@ public class HomeController {
         booking.setStatus("Booked");
         bookingRepository.save(booking);
 
+
+        Optional<Room> roomOptional = roomRepository.findById(roomId);
+
+        if(roomOptional.isPresent()) {
+            Room room = roomOptional.get();
+            model.addAttribute("room", room);
+            model.addAttribute("hotel", room.getHotel());
+        }
+
+        long nights = java.time.temporal.ChronoUnit.DAYS.between(checkIn, checkOut);
+        double totalPrice = 0.0;
+
+        if(roomOptional.isPresent()) {
+            totalPrice = roomOptional.get().getPrice()*nights;
+        }
+        
+        model.addAttribute("nights", nights);
+        model.addAttribute("totalPrice", totalPrice);
+
         model.addAttribute("message", "Booking Confirmed, Enjoy your Stay "+customer.getCustName()+"!");
+
         return "booking-confirmed";
 
     }
