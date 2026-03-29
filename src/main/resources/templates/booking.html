@@ -14,8 +14,9 @@
         <p>Price: <span th:text = "${room.price}"></span></p>
 
         <h3>Details of your Stay</h3>
-        <p>Check in Date: <span th:text = "${searchFilter.checkInDate} ?: 'Not Selected'"></span></p>
-        <p>Check out Date: <span th:text = "${searchFilter.checkOutDate} ?: 'Not Selected'"></span></p>
+        <p>Check in Date: <span th:text = "${autoCheckIn}"></span></p>
+        <p>Check out Date: <span th:text = "${autoCheckOut}"></span></p>
+        <p th:if="${usedDefaultDates}" style = "color:rgb(0, 128, 109); font-weight:bold;">Dates not Specified, a Default 1-Night Stay was Used.</p>
 
         <h3>Booker Details</h3>
         <form method ="post" action="/booking/confirm">

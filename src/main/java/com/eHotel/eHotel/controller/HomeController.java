@@ -202,6 +202,22 @@ public class HomeController {
         model.addAttribute("searchFilter", searchFilter);
         model.addAttribute("hotel", hotelOptional.get());
 
+        boolean usedDefaultDates = false;
+        LocalDate checkIn;
+        LocalDate checkOut;
+
+        if(searchFilter.getCheckInDate() == null || searchFilter.getCheckOutDate() == null) {
+            checkIn = LocalDate.now();
+            checkOut = checkIn.plusDays(1);
+            usedDefaultDates = true;
+        } else {
+            checkIn = LocalDate.parse(searchFilter.getCheckInDate());
+            checkOut = LocalDate.parse(searchFilter.getCheckOutDate());
+        }
+
+        model.addAttribute("usedDefaultDates", usedDefaultDates);
+        model.addAttribute("autoCheckIn", checkIn.toString());
+        model.addAttribute("autoCheckOut", checkOut.toString());
         return "booking";
     }
 
