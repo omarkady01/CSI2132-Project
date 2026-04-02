@@ -166,8 +166,15 @@ public class HomeController {
 
     @PostMapping("/quiz/dates/skip")
     public String skipDates(@ModelAttribute("searchFilter") SearchFilter searchFilter) {
-        searchFilter.setCheckInDate(null);
-        searchFilter.setCheckOutDate(null);
+
+        searchFilter.setDateNull(true);
+        LocalDate checkIn = LocalDate.now();
+        LocalDate checkOut = checkIn.plusDays(1);
+
+        searchFilter.setCheckInDate(checkIn.toString());
+        searchFilter.setCheckOutDate(checkOut.toString());
+            
+
         return "redirect:/quiz/results";
     }
 
@@ -202,14 +209,13 @@ public class HomeController {
         model.addAttribute("searchFilter", searchFilter);
         model.addAttribute("hotel", hotelOptional.get());
 
-        boolean usedDefaultDates = false;
+        boolean usedDefaultDates = searchFilter.getDateNull();
         LocalDate checkIn;
         LocalDate checkOut;
 
-        if(searchFilter.getCheckInDate() == null || searchFilter.getCheckOutDate() == null) {
+        if(usedDefaultDates == true) {
             checkIn = LocalDate.now();
             checkOut = checkIn.plusDays(1);
-            usedDefaultDates = true;
         } else {
             checkIn = LocalDate.parse(searchFilter.getCheckInDate());
             checkOut = LocalDate.parse(searchFilter.getCheckOutDate());
@@ -230,10 +236,14 @@ public class HomeController {
         if(searchFilter.getCheckInDate() == null || searchFilter.getCheckOutDate() == null) {
             checkIn = LocalDate.now();
             checkOut = checkIn.plusDays(1);
+
         } else {
             checkIn = LocalDate.parse(searchFilter.getCheckInDate());
             checkOut = LocalDate.parse(searchFilter.getCheckOutDate());
         }
+
+        System.out.println(checkIn.toString());
+        System.out.println(checkOut.toString());
 
 
         Optional<Customer> existingCustomer = customerRepository.findByIdNumber(idNumber);

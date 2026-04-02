@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org">
     <head>
         <title>Booking Confirmation Details</title>
     </head>
@@ -8,15 +8,22 @@
         <h2>Booking Receipt</h2>
 
         <p><strong>Customer:</strong> <span th:text="${customerName}"></span></p>
-        <p><strong>Hotel:</strong> <span th:text="${hotel.hotelName}"></span></p>
-        <p><strong>City:</strong> <span th:text="${hotel.city}"></span></p>
-        <p><strong>Room Number:</strong> <span th:text="${room.roomNumber}"></span></p>
-        <p><strong>Capacity:</strong> <span th:text="${room.capacity}"></span></p>
-        <p><strong>Price per Night:</strong> $<span th:text="${room.price}"></span></p>
+        
+        <div th:if="${hotel != null and room != null}">
+
+            <p><strong>Hotel:</strong> <span th:text="${hotel.hotelName}"></span></p>
+            <p><strong>City:</strong> <span th:text="${hotel.city}"></span></p>
+            <p><strong>Room Number:</strong> <span th:text="${room.roomNumber}"></span></p>
+            <p><strong>Capacity:</strong> <span th:text="${room.capacity}"></span></p>
+            <p><strong>Price per Night:</strong> $<span th:text="${room.price}"></span></p>
+        
+        </div>
+        
         <p><strong>Check in:</strong> <span th:text="${checkInDate} ?: 'Not Specified'"></span></p>
         <p><strong>Check Out:</strong> <span th:text="${checkOutDate} ?: 'Not Specified'"></span></p>
         <p><strong>Nights:</strong> <span th:text="${nights} ?: 'N/A'"></span></p>
         <p><strong>Estimated Total:</strong> $<span th:text="${totalPrice} ?: '0.0'"></span></p>
+
 
         <a href="/quiz/reset">Start New Search</a>
     </body>

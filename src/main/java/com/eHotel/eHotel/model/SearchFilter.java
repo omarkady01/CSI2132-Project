@@ -8,7 +8,7 @@ public class SearchFilter {
     private Double maxPrice;
     private String checkInDate;
     private String checkOutDate;
-    
+    private boolean dateNull;
 
     public SearchFilter() {
 
@@ -67,6 +67,14 @@ public class SearchFilter {
             return null;
         }
         return value.trim();
+    }
+
+    public void setDateNull(boolean val) {
+        this.dateNull = val;
+    }
+
+    public boolean getDateNull() {
+        return dateNull;
     }
 
 }
