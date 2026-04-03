@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html xmlns: th="http://www.thymeleaf.org">
+    <head>
+        <title>Employee Result</title>
+    </head>
+    <body>
+        <h1 th:text="${message}"></h1>
+        <div th:if="${rentingId}">
+            <p>Renting ID: <span th:text="${rentingId}"></span></p>
+            <form method="get" action="/employee/payment">
+                <input type="hidden" name="rentingId" th:value="${rentingId}">
+                <button type="submit">Add Payment</button>
+            </form>
+        </div>
+        <br>
+        <a href="/employee/bookings">Return to Bookings</a>
+    </body>
+</html>

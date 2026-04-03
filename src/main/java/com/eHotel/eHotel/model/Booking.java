@@ -49,7 +49,7 @@ public class Booking {
         return startDate;
     }
 
-    public LocalDate getEnDate() {
+    public LocalDate getEndDate() {
         return endDate;
     }
 

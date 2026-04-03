@@ -12,6 +12,13 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import com.eHotel.eHotel.model.Hotel;
 import com.eHotel.eHotel.repo.HotelRepository;
+import com.eHotel.eHotel.model.Booking;
+import com.eHotel.eHotel.model.Employee;
+import com.eHotel.eHotel.model.Renting;
+import com.eHotel.eHotel.model.Payment;
+import com.eHotel.eHotel.repo.EmployeeRepository;
+import com.eHotel.eHotel.repo.RentingRepository;
+import com.eHotel.eHotel.repo.PaymentRepository;
 
 
 @Controller
@@ -22,12 +29,19 @@ public class HomeController {
     private final CustomerRepository customerRepository;
     private final BookingRepository bookingRepository;
     private final HotelRepository hotelRepository;
+    private final EmployeeRepository employeeRepository;
+    private final RentingRepository rentingRepository;
+    private final PaymentRepository paymentRepository;
 
-    public HomeController(RoomRepository roomRepository, CustomerRepository customerRepository, BookingRepository bookingRepository, HotelRepository hotelRepository) {
+
+    public HomeController(RoomRepository roomRepository, CustomerRepository customerRepository, BookingRepository bookingRepository, HotelRepository hotelRepository, EmployeeRepository employeeRepository, RentingRepository rentingRepository, PaymentRepository paymentRepository) {
         this.roomRepository = roomRepository;
         this.customerRepository = customerRepository;
         this.bookingRepository = bookingRepository;
         this.hotelRepository = hotelRepository;
+        this.employeeRepository = employeeRepository;
+        this.rentingRepository = rentingRepository;
+        this.paymentRepository = paymentRepository;
     }
 
     @ModelAttribute("searchFilter")
@@ -297,6 +311,73 @@ public class HomeController {
 
         return "booking-confirmed";
 
+    }
+
+    // EMPLOYEE SECTION
+
+    @GetMapping("/employee/bookings")
+    public String employeeBookings(Model model) {
+        List<Booking> bookings = bookingRepository.findByStatus("Booked");
+        List<Employee> employees = employeeRepository.findAll();
+
+        model.addAttribute("bookigns", bookings);
+        model.addAttribute("employees", employees);
+
+        return "employee-bookings";
+    }
+
+    @PostMapping("/employee/convert-to-renting")
+    public String convertToRenting(@RequestParam Integer bookingId, @RequestParam Integer employeeId, Model model) {
+
+        Optional<Booking> bookingOptional = bookingRepository.findById(bookingId);
+
+        if(bookingOptional.isEmpty()) {
+            model.addAttribute("message", "Booking Not Found!");
+            return "employee-result";
+        }
+
+        Booking booking = bookingOptional.get();
+
+        Renting renting = new Renting();
+        renting.setBookingId(booking.getBookingId());
+        renting.setCustomerId(booking.getCustomerId());
+        renting.setRoomId(booking.getRoomId());
+        renting.setEmployeeId(employeeId);
+        renting.setCheckInDate(booking.getStartDate());
+        renting.setCheckOutDate(booking.getEndDate());
+        renting.setRentingDate(LocalDateTime.now());
+        renting.setStatus("Active");
+
+        renting = rentingRepository.saveAndFlush(renting);
+
+        booking.setStatus("Converted");
+        bookingRepository.save(booking);
+
+        model.addAttribute("message", "Booking has been Converted to Renting!");
+        model.addAttribute("rentingId", renting.getRentingId());
+
+        return "employee-result";
+    }
+
+    @GetMapping("/employee/payment")
+    public String paymentPage(@RequestParam Integer rentingId, Model model) {
+        model.addAttribute("rentingId", rentingId);
+        return "employee-payment";
+    }
+
+    @PostMapping("/employee/payment")
+    public String savePayment(@RequestParam Integer rentingId, @RequestParam Double amount, @RequestParam String paymentMethod, Model model) {
+        Payment payment = new Payment();
+        payment.setRentingId(rentingId);
+        payment.setAmount(amount);
+        payment.setPaymentMethod(paymentMethod);
+        payment.setPaymentDate(LocalDateTime.now());
+
+        paymentRepository.save(payment);
+
+        model.addAttribute("message", "Payment Added Successfully!");
+
+        return "employee-result";
     }
 
 

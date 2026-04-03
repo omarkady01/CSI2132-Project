@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html xmlns:th = "http://www.thymeleaf.org">
+    <head>
+        <title>Employee Bookings Manager</title>
+    </head>
+    <body>
+        <h1>Employee Access</h1>
+        <table border = "1">
+            <tr>
+                <th>Booking ID</th>
+                <th>Customer ID</th>
+                <th>Room ID</th>
+                <th>Start Date</th>
+                <th>End Date</th>
+                <th>Status</th>
+                <th>Employee</th>
+                <th>Status</th>
+
+            </tr>
+
+            <tr th:each="booking : ${bookings}">
+                <td th:text="${booking.bookingId}"></td>
+                <td th:text="${booking.customerId}"></td>
+                <td th:text="${booking.roomId}"></td>
+                <td th:text="${booking.startDate}"></td>
+                <td th:text="${booking.endDate}"></td>
+                <td th:text="${booking.status}"></td>
+                <td>
+                    <form method="post" action="/employee/convert-to-renting">
+                        <input type="hidden" name="bookingId" th:value="${booking.bookingId}">
+                        <select name="employeeId" required>
+                            <option th:each="employee : ${employees}" th:value="${employee.employeeId} th:text=${employee.empName}"></option>
+                        </select>
+                </td>
+                <button>type "submit">Convert to Renting</button>
+                </form>
+            </tr>
+        </table>
+    </body>
+</html>
