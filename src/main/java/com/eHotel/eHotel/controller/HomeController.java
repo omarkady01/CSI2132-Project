@@ -320,7 +320,10 @@ public class HomeController {
         List<Booking> bookings = bookingRepository.findByStatus("Booked");
         List<Employee> employees = employeeRepository.findAll();
 
-        model.addAttribute("bookigns", bookings);
+         System.out.println("Bookings size = " + bookings.size());
+    System.out.println("Employees size = " + employees.size());
+
+        model.addAttribute("bookings", bookings);
         model.addAttribute("employees", employees);
 
         return "employee-bookings";
