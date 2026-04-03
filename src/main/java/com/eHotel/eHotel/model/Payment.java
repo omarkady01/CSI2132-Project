@@ -21,7 +21,7 @@ public class Payment {
     @Column(name = "amount")
     private Double amount;
 
-    @Column(name = "paymentMethod")
+    @Column(name = "payment_method")
     private String paymentMethod;
 
     public Payment() {
@@ -41,7 +41,7 @@ public class Payment {
     }
 
     public void setRentingId(Integer id) {
-        this.rentingId = rentingId;
+        this.rentingId = id;
     }
 
     public LocalDateTime getPaymentDate() {
