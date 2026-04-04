@@ -286,8 +286,18 @@ public class HomeController {
         booking.setEndDate(checkOut);
         booking.setBookingDate(LocalDateTime.now());
         booking.setStatus("Booked");
-        bookingRepository.save(booking);
+        
+        booking = bookingRepository.saveAndFlush(booking);
 
+System.out.println("Booking exists right after save = " +
+        bookingRepository.findById(booking.getBookingId()).isPresent());
+System.out.println("BOOKING SAVED");
+System.out.println("Booking ID = " + booking.getBookingId());
+System.out.println("Room ID = " + booking.getRoomId());
+System.out.println("Customer ID = " + booking.getCustomerId());
+System.out.println("Start Date = " + booking.getStartDate());
+System.out.println("End Date = " + booking.getEndDate());
+System.out.println("Status = " + booking.getStatus());
 
         Optional<Room> roomOptional = roomRepository.findById(roomId);
 
@@ -320,6 +330,10 @@ public class HomeController {
         List<Booking> bookings = bookingRepository.findByStatus("Booked");
         List<Employee> employees = employeeRepository.findAll();
 
+        for (Booking b : bookings) {
+    System.out.println("BOOKING -> ID: " + b.getBookingId() + ", status: [" + b.getStatus() + "]");
+}
+
          System.out.println("Bookings size = " + bookings.size());
     System.out.println("Employees size = " + employees.size());
 
@@ -331,6 +345,8 @@ public class HomeController {
 
     @PostMapping("/employee/convert-to-renting")
     public String convertToRenting(@RequestParam Integer bookingId, @RequestParam Integer employeeId, Model model) {
+
+        try {
 
         Optional<Booking> bookingOptional = bookingRepository.findById(bookingId);
 
@@ -350,7 +366,8 @@ public class HomeController {
         renting.setCheckOutDate(booking.getEndDate());
         renting.setRentingDate(LocalDateTime.now());
         renting.setStatus("Active");
-
+    
+            
         renting = rentingRepository.saveAndFlush(renting);
 
         booking.setStatus("Converted");
@@ -358,7 +375,9 @@ public class HomeController {
 
         model.addAttribute("message", "Booking has been Converted to Renting!");
         model.addAttribute("rentingId", renting.getRentingId());
-
+        } catch (Exception e) {
+            model.addAttribute("message", "Overlap Detected, Conversion Could Not be Completed!");
+        }
         return "employee-result";
     }
 
