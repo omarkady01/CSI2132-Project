@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <title>Customer Check In Manager</title>
+    </head>
+    <body>
+        <h1>Walk In Check In</h1>
+
+        <form method="post" action="/employee/direct-renting">
+            <h3>Select Room</h3>
+            <label>Room:</label>
+            <select name="roomId" required>
+                <option th:each="room : ${rooms}"
+                th:value="${room.roomId}"
+                th:text="'Room '+${room.roomNumber} +' - Hotel '+${room.hotelId} + '- $'+${room.price}">
+            </option>
+            </select>
+
+            <br><br>
+            <h3>Select Employee</h3>
+            <label>Employee:</label>
+            <select name="employeeId" required>
+                <option th:each = "employee : ${employees}"
+                th:value ="${employee.employeeId}"
+                th:text="${employee.empName}"></option>
+            </select>
+            <br><br>
+
+            <h3>Customer Information</h3>
+            <label>Full Name:</label>
+            <input type="text" name="custName" required>
+            <br><br>
+
+            <label>Address:</label>
+            <input type="text" name="address" required>
+            <br><br>
+
+            <label>ID Type</label>
+            <input type="text" name="idType" required>
+            <br><br>
+
+            <label>ID Number:</label>
+            <input type="text" name="idNumber" required>
+            <br><br>
+
+
+            <h3>Stay Dates</h3>
+            <label> Check in Date:</label>
+            <input type="date" name="checkInDate" th:attr="min=${today}" required>
+            <br><br>
+            
+            <label>Check out Date:</label>
+            <input type="date" name="checkOutDate" th:attr="min=${today}" required>
+            <br><br>
+
+            <button type="submit">Finalize Check In</button>
+        </form>
+    </body>
+</html>

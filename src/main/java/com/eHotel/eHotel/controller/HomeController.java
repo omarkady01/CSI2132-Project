@@ -402,6 +402,70 @@ System.out.println("Status = " + booking.getStatus());
         return "employee-result";
     }
 
+    // WALK INS HANDLING
+
+    @GetMapping("/employee/direct-renting")
+    public String directRentingPage(Model model) {
+        List<Room> rooms = roomRepository.findAll();
+        List<Employee> employees = employeeRepository.findAll();
+
+        model.addAttribute("rooms", rooms);
+        model.addAttribute("employees", employees);
+
+        return "employee-direct-renting";
+    }
+
+    @PostMapping("/employee/direct-renting")
+    public String saveDirectRenting(@RequestParam Integer roomId, @RequestParam Integer employeeId, @RequestParam String custName, @RequestParam String address, @RequestParam String idType, @RequestParam String idNumber, @RequestParam String checkInDate, @RequestParam String checkOutDate, Model model) {
+
+        try {
+            LocalDate checkIn = LocalDate.parse(checkInDate);
+            LocalDate checkOut = LocalDate.parse(checkOutDate);
+
+            if (!checkOut.isAfter(checkIn)) {
+                model.addAttribute("message", "Dates Mismatch Error, Check Out Date Must be After Check In");
+                return "employee-result";
+            }
+
+            Optional<Customer> existingCustomer = customerRepository.findByIdNumber(idNumber);
+            Customer customer;
+
+            if (existingCustomer.isPresent()) {
+                customer = existingCustomer.get();
+            } else {
+                customer = new Customer();
+                customer.setCustName(custName);
+                customer.setAddress(address);
+                customer.setIdType(idType);
+                customer.setIdNumber(idNumber);
+                customer.setRegistrationDate(LocalDate.now());
+                customer=customerRepository.save(customer);
+            }
+
+            Renting renting = new Renting();
+            renting.setBookingId(null);
+            renting.setCustomerId(customer.getCustomerId());
+            renting.setRoomId(roomId);
+            renting.setEmployeeId(employeeId);
+            renting.setCheckInDate(checkIn);
+            renting.setCheckOutDate(checkOut);
+            renting.setRentingDate(LocalDateTime.now());
+            renting.setStatus("Active");
+
+            renting = rentingRepository.saveAndFlush(renting);
+
+            model.addAttribute("message", "Customer Checked In Successfully!");
+            model.addAttribute("rentingId", renting.getRentingId());
+
+            return "employee-result";
+        } catch (Exception e) {
+            e.printStackTrace();
+            model.addAttribute("message", "Check In Failed, Error: "+e.getMessage());
+            return "employee-result";
+
+        }
+    }
+
 
 
 }
