@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns:th = "http://www.thymeleaf.org">
+    <head>
+        <title>Rentings Manager</title>
+        
+    </head>
+    <body>
+        <h1>View or Cancel Rentings</h1>
+
+        <table border="1">
+            <tr>
+                <th>Renting ID</th>
+                <th>Booking ID</th>
+                <th>Customer ID</th>
+                <th>Room ID</th>
+                <th>Employee ID</th>
+                <th>Check In Date</th>
+                <th>Check Out Date</th>
+                <th>Status</th>
+                <th>Cancel Rental</th>
+            </tr>
+
+            <tr th:each="renting : ${rentings}">
+                <td th:text="${renting.rentingId}"></td>
+                <td th:text="${renting.bookingId}"></td>
+                <td th:text="${renting.customerId}"></td>
+                <td th:text="${renting.roomId}"></td>
+                <td th:text="${renting.employeeId}"></td>
+                <td th:text="${renting.checkInDate}"></td>
+                <td th:text="${renting.checkOutDate}"></td>
+                <td th:text="${renting.status}"></td>
+                <td>
+                    <form method="post" action="/employee/cancel-renting"
+                    th:if="${renting.status == 'Active'}">
+                <input type="hidden" name="rentingId" th:value="${renting.rentingId}">
+                <button type="submit">Cancel Renting</button>
+            </form>
+                </td>
+            </tr>
+        </table>
+
+        <br>
+        <a href="/employee/bookings">Return to Dashboard</a>
+    </body>
+</html>

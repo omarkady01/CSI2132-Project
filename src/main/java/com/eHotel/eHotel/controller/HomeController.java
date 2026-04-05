@@ -466,6 +466,42 @@ System.out.println("Status = " + booking.getStatus());
         }
     }
 
+    @GetMapping("/employee/rentings")
+    public String employeeRentings(Model model) {
+        List<Renting> rentings = rentingRepository.findAll();
+
+        model.addAttribute("rentings", rentings);
+
+        return "employee-rentings";
+    }
+
+    @PostMapping("/employee/cancel-renting")
+    public String cancelRenting(@RequestParam Integer rentingId, Model model) {
+        Optional<Renting> rentingOptional = rentingRepository.findById(rentingId);
+
+        if(rentingOptional.isEmpty()) {
+            model.addAttribute("message", "Renting not found!");
+            return "employee-result";
+        }
+
+        Renting renting = rentingOptional.get();
+        renting.setStatus("Cancelled");
+        rentingRepository.saveAndFlush(renting);
+
+        if (renting.getBookingId() != null) {
+            Optional<Booking> bookingOptional = bookingRepository.findById(renting.getBookingId());
+            if(bookingOptional.isPresent()) {
+                Booking booking = bookingOptional.get();
+                booking.setStatus("Cancelled");
+                bookingRepository.saveAndFlush(booking);
+            }
+        }
+
+        model.addAttribute("message", "Renting Cancelled Successfully!");
+
+        return "employee-result";
+    }
+
 
 
 }
