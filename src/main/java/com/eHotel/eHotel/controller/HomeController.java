@@ -33,8 +33,10 @@ public class HomeController {
     private final RentingRepository rentingRepository;
     private final PaymentRepository paymentRepository;
 
+    private final AvailableRoomsPerAreaRepository availableRoomsPerAreaRepository;
+    private final HotelTotalCapacityRepository hotelTotalCapacityRepository;
 
-    public HomeController(RoomRepository roomRepository, CustomerRepository customerRepository, BookingRepository bookingRepository, HotelRepository hotelRepository, EmployeeRepository employeeRepository, RentingRepository rentingRepository, PaymentRepository paymentRepository) {
+    public HomeController(RoomRepository roomRepository, CustomerRepository customerRepository, BookingRepository bookingRepository, HotelRepository hotelRepository, EmployeeRepository employeeRepository, RentingRepository rentingRepository, PaymentRepository paymentRepository, AvailableRoomsPerAreaRepository availableRoomsPerAreaRepository, HotelTotalCapacityRepository hotelTotalCapacityRepository) {
         this.roomRepository = roomRepository;
         this.customerRepository = customerRepository;
         this.bookingRepository = bookingRepository;
@@ -42,6 +44,9 @@ public class HomeController {
         this.employeeRepository = employeeRepository;
         this.rentingRepository = rentingRepository;
         this.paymentRepository = paymentRepository;
+
+        this.hotelTotalCapacityRepository = hotelTotalCapacityRepository;
+        this.availableRoomsPerAreaRepository = availableRoomsPerAreaRepository;
     }
 
     @ModelAttribute("searchFilter")
@@ -500,6 +505,16 @@ System.out.println("Status = " + booking.getStatus());
         model.addAttribute("message", "Renting Cancelled Successfully!");
 
         return "employee-result";
+    }
+
+    // SQL VIEWS PART 2F
+
+    @GetMapping("/views")
+    public String showViews(Model model) {
+        model.addAttribute("roomsPerArea", availableRoomsPerAreaRepository.findAll());
+        model.addAttribute("hotelCapacities", hotelTotalCapacityRepository.findAll());
+        return "views";
+
     }
 
 

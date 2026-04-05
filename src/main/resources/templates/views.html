@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <title>Database Views</title>
+    </head>
+    <body>
+        <h1>Database Views</h1>
+        <h2>Available Rooms Per Area</h2>
+        <table border="1">
+            <tr>
+                <th>Area</th>
+                <th>Available Rooms</th>
+            </tr>
+
+            <tr th:each="row : ${roomsPerArea}">
+                <td th:text="${row.area}"></td>
+                <td th:text="${row.availableRooms}"></td>
+            </tr>
+        </table>
+
+        <br><br>
+
+        <h2>Hotel Total Capacity</h2>
+        <table border="1">
+            <tr>
+                <th>Hotel ID</th>
+                <th>Hotel Name</th>
+                <th>Total Capacity</th>
+            
+            </tr>
+
+            <tr th:each="row : ${hotelCapacities}">
+                <td th:text="${row.hotelId}"></td>
+                <td th:text="${row.hotelName}"></td>
+                <td th:text="${row.totalCapacity}"></td>
+            </tr>
+        </table>
+        <br><br>
+
+        <a href="/">Return to Homepage</a>
+    </body>
+</html>
