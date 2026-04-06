@@ -19,7 +19,7 @@ import com.eHotel.eHotel.model.Payment;
 import com.eHotel.eHotel.repo.EmployeeRepository;
 import com.eHotel.eHotel.repo.RentingRepository;
 import com.eHotel.eHotel.repo.PaymentRepository;
-
+import org.springframework.data.domain.Sort;
 
 @Controller
 @SessionAttributes("searchFilter")
@@ -146,7 +146,6 @@ public class HomeController {
     @GetMapping("/quiz/results")
     public String quizResults(@ModelAttribute("searchFilter") SearchFilter searchFilter, Model model) {
         List<Room> rooms = roomRepository.searchRooms(searchFilter.getCity(), searchFilter.getCapacity(), searchFilter.getMinPrice(), searchFilter.getMaxPrice(), searchFilter.getCheckInDate(), searchFilter.getCheckOutDate());
-        
         model.addAttribute("rooms", rooms);
         model.addAttribute("searchFilter", searchFilter);
         return "quiz-results";
@@ -411,7 +410,7 @@ System.out.println("Status = " + booking.getStatus());
 
     @GetMapping("/employee/direct-renting")
     public String directRentingPage(Model model) {
-        List<Room> rooms = roomRepository.findAll();
+        List<Room> rooms = roomRepository.findAll(Sort.by("roomId"));
         List<Employee> employees = employeeRepository.findAll();
 
         model.addAttribute("rooms", rooms);
@@ -521,7 +520,8 @@ System.out.println("Status = " + booking.getStatus());
 
     @GetMapping("/admin/rooms")
     public String manageRooms(Model model) {
-        List<Room> rooms = roomRepository.findAll();
+        List<Room> rooms = roomRepository.findAll(Sort.by("roomId"));
+
         List<Hotel> hotels = hotelRepository.findAll();
 
         model.addAttribute("rooms", rooms);
