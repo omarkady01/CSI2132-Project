@@ -589,6 +589,32 @@ System.out.println("Status = " + booking.getStatus());
         }
     }
 
+    @GetMapping("/admin/customers")
+    public String manageCustomers(Model model) {
+        List<Customer> customers = customerRepository.findAll();
+        model.addAttribute("customers", customers);
+        return "admin-customers";
+    }
+
+    @PostMapping("/admin/customers/delete")
+    public String deleteCustomer(@RequestParam Integer customerId, Model model) {
+        try {
+
+            customerRepository.deleteById(customerId);
+            customerRepository.flush();
+            return "redirect://admin/customers";
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            model.addAttribute("message", "Error Deleting Customer May Have an Active Booking and/or Renting");
+            model.addAttribute("customers", customerRepository.findAll());
+            return "admin-customers";
+        }
+
+    }
+
+
+
     
 
 
