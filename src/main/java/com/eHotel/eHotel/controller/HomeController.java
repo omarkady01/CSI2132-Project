@@ -517,6 +517,81 @@ System.out.println("Status = " + booking.getStatus());
 
     }
 
+    // ADMIN FUNCTION
+
+    @GetMapping("/admin/rooms")
+    public String manageRooms(Model model) {
+        List<Room> rooms = roomRepository.findAll();
+        List<Hotel> hotels = hotelRepository.findAll();
+
+        model.addAttribute("rooms", rooms);
+        model.addAttribute("hotels", hotels);
+        model.addAttribute("roomForm", new Room());
+
+        return "admin-rooms";
+
+    }
+
+    @PostMapping("/admin/rooms/add")
+    public String addRoom(@ModelAttribute("roomForm") Room room, Model model) {
+        try {
+            roomRepository.saveAndFlush(room);
+            return "redirect:/admin/rooms";
+        } catch (Exception e) {
+            e.printStackTrace();
+            model.addAttribute("message", "Error Adding Room: "+e.getMessage());
+            model.addAttribute("rooms", roomRepository.findAll());
+            model.addAttribute("hotels", hotelRepository.findAll());
+            return "admin-rooms";
+        }
+
+    }
+
+    @GetMapping("/admin/rooms/edit/{id}")
+    public String editRoomPage(@PathVariable Integer id, Model model) {
+        Optional<Room> roomOptional = roomRepository.findById(id);
+
+        if (roomOptional.isEmpty()) {
+            return "redirect://admin/rooms";
+        }
+
+        model.addAttribute("room", roomOptional.get());
+        model.addAttribute("hotels", hotelRepository.findAll());
+        return "edit-room";
+    }
+
+    @PostMapping("/admin/rooms/update")
+    public String updateRoom(@ModelAttribute Room room, Model model) {
+        try {
+            roomRepository.saveAndFlush(room);
+            return "redirect:/admin/rooms";
+        } catch (Exception e) {
+            e.printStackTrace();
+            model.addAttribute("message", "Error Updating Room: "+e.getMessage());
+            model.addAttribute("room", room);
+            model.addAttribute("hotels", hotelRepository.findAll());
+            return "edit-room";
+        }
+    }
+
+    @PostMapping("/admin/rooms/delete")
+    public String deleteRoom(@RequestParam Integer roomId, Model model) {
+        try {
+            roomRepository.deleteById(roomId);
+            return "redirect:/admin/rooms";
+        } catch (Exception e) {
+            e.printStackTrace();
+            model.addAttribute("message", "Error Deleting Room: "+e.getMessage());
+            model.addAttribute("rooms", roomRepository.findAll());
+            model.addAttribute("hotels", hotelRepository.findAll());
+            model.addAttribute("roomForm", new Room());
+            return "admin-rooms";
+        }
+    }
+
+    
+
+
 
 
 }

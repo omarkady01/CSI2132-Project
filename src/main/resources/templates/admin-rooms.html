@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <title>Admin Room Manager</title>
+    </head>
+    <body>
+        <h1>Manage Rooms</h1>
+
+        <p th:if="${message}" th:text="${message}" style="color: darkslategrey; font-weight: bold;"></p>
+
+        <h2>All Rooms</h2>
+        <table border="1">
+            <tr>
+                <th>Room ID</th>
+                <th>Hotel</th>
+                <th>Room Number</th>
+                <th>Price</th>
+                <th>Capacity</th>
+                <th>View Type</th>
+                <th>Extendable</th>
+                <th>Problems</th>
+                <th>Active</th>
+                <th>Edit</th>
+                <th>Delete</th>
+            </tr>
+
+            <tr th:each="room : ${rooms}">
+                <td th:text="${room.roomId}"></td>
+                <td th:text="${room.hotelId}"></td>
+                <td th:text="${room.roomNumber}"></td>
+                <td th:text="${room.price}"></td>
+                <td th:text="${room.capacity}"></td>
+                <td th:text="${room.viewType}"></td>
+                <td th:text="${room.extendable}"></td>
+                <td th:text="${room.problems}"></td>
+                <td th:text="${room.isActive}"></td>
+                <td>
+                    <a th:href="@{/admin/rooms/edit/{id}(id=${room.roomId})}">Edit Room</a>
+                </td>
+                <td>
+                    <form method="post" action="/admin/rooms/delete">
+                        <input type="hidden" name="roomId" th:value="${room.roomId}">
+                        <button type="submit" onClick="return confirm('Delete This Room?')">Delete Room</button>
+                    </form>
+                </td>
+            </tr>
+        </table>
+
+        <br><br>
+
+        <h2>Add New Room</h2>
+        <form method="post" action="/admin/rooms/add" th:object="${roomForm}">
+            <label>Hotel:</label>
+            <select th:field="*{hotelId}" required>
+                <option th:each="hotel : ${hotels}"
+                th:value = "${hotel.hotelId}"
+                th:text="${hotel.hotelName}">
+            </option>
+            </select>
+            <br><br>
+
+            <label>Room Number:</label>
+            <input type="text" th:field="*{roomNumber}" required>
+            <br><br>
+
+            <label>Price:</label>
+            <input type="number" th:field="*{price}" step="0.01" required>
+            <br><br>
+
+            <label>Capacity:</label>
+            <select th:field="*{capacity}" required>
+                <option value="Single">Single</option>
+                <option value="Double">Double</option>
+                <option value="Triple">Triple</option>
+                <option value="Suite">Suite</option>
+                <option value="Family">Family</option>
+            </select>
+
+            <br><br>
+
+           <label>View Type:</label>
+           <select th:field="*{viewType}" required>
+               <option value="none">none</option>
+               <option value="sea">sea</option>
+               <option value="mountain">mountain</option>
+           </select>
+           <br><br>
+
+           <label>Extendable:</label>
+           <select th:field="*{extendable}">
+               <option th:value="true">Yes</option>
+               <option th:value="false">No</option>
+           </select>
+           <br><br>
+
+           <label>Problems:</label>
+           <input type="text" th:field="*{problems}">
+           <br><br>
+
+            
+           <label>Active:</label>
+           <select th:field="*{isActive}">
+               <option th:value="true">true</option>
+               <option th:value="false">false</option>
+            </select>
+            <br><br>
+
+        <button type="submit">Add Room</button>
+        </form>
+
+        <br>
+        <a href="/">Back Home</a>
+    </body>
+</html>

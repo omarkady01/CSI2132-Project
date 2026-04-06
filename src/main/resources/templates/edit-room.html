@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <title>Edit Room</title>
+
+    </head>
+    <body>
+        <h1>Edit Room</h1>
+
+        <p th:if="${message}" th:text="${message}" style="color: lightseagreen; font-weight: bold;"></p>
+        <form method="post" action="/admin/rooms/update" th:object="${room}">
+            <input type="hidden" th:field="*{roomId}">
+
+            <label>Hotel:</label>
+            <select th:field="*{hotelId}" required>
+                <option th:each="hotel : ${hotels}"
+                th:value="${hotel.hotelId}"
+                th:text="${hotel.hotelName}">
+            </option>
+
+
+            </select>
+
+            <br><br>
+
+           <label>Room Number:</label>
+           <input type="text" th:field="*{roomNumber}" required>
+           <br><br>
+
+           <label>Price:</label>
+           <input type="number" th:field="*{price}" step="0.01" required>
+           <br><br>
+
+           <label>Capacity:</label>
+           <select th:field="*{capacity}" required>
+               <option value="Single">Single</option>
+               <option value="Double">Double</option>
+               <option value="Triple">Triple</option>
+               <option value="Suite">Suite</option>
+              <option value="Family">Family</option>
+            </select>
+           <br><br>
+
+          <label>View Type:</label>
+          <select th:field="*{viewType}" required>
+              <option value="none">none</option>
+              <option value="sea">sea</option>
+              <option value="mountain">mountain</option>
+          </select>
+          <br><br>
+
+         <label>Extendable:</label>
+         <select th:field="*{extendable}">
+             <option th:value="true">true</option>
+             <option th:value="false">false</option>
+         </select>
+         <br><br>
+
+         <label>Problems:</label>
+         <input type="text" th:field="*{problems}">
+         <br><br>
+
+        <label>Active:</label>
+        <select th:field="*{isActive}">
+            <option th:value="true">true</option>
+            <option th:value="false">false</option>
+        </select>
+        <br><br>
+
+        <button type="submit">Update Room</button>
+    </form>
+
+    <br>
+    <a href="/admin/rooms">Back to Rooms</a>
+
+    </body>
+</html>
