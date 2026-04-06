@@ -1,0 +1,516 @@
+--DROP TABLE IF EXISTS payment CASCADE;
+--DROP TABLE IF EXISTS renting CASCADE;
+--DROP TABLE IF EXISTS booking CASCADE;
+--DROP TABLE IF EXISTS room_amenity CASCADE;
+--DROP TABLE IF EXISTS amenity CASCADE;
+--DROP TABLE IF EXISTS room CASCADE;
+--DROP TABLE IF EXISTS employee_role CASCADE;
+--DROP TABLE IF EXISTS employee CASCADE;
+--DROP TABLE IF EXISTS customer CASCADE;
+--DROP TABLE IF EXISTS hotel_phone CASCADE;
+--DROP TABLE IF EXISTS hotel_email CASCADE;
+--DROP TABLE IF EXISTS hotel CASCADE;
+--DROP TABLE IF EXISTS hotel_chain_phone CASCADE;
+--DROP TABLE IF EXISTS hotel_chain_email CASCADE;
+--DROP TABLE IF EXISTS hotel_chain CASCADE;
+--DROP VIEW IF EXISTS available_rooms_per_area;
+--DROP VIEW IF EXISTS hotel_total_capacity;
+
+-- HOTEL CHAIN TABLES
+
+CREATE TABLE hotel_chain (
+    chain_id SERIAL PRIMARY KEY,
+    chain_name VARCHAR(255) NOT NULL,
+    central_office_address VARCHAR(255) NOT NULL
+);
+
+-- ADDING SEPARATE TABLES FOR EMAILS AND PHONES SINCE MULTIPLE ATTRIBUTES CAN OCCUR
+
+CREATE TABLE hotel_chain_email (
+    chain_id INT NOT NULL,
+    email VARCHAR(255) NOT NULL,
+    PRIMARY KEY (chain_id, email),
+    FOREIGN KEY (chain_id) REFERENCES hotel_chain(chain_id) ON DELETE CASCADE
+);
+
+CREATE TABLE hotel_chain_phone (
+    chain_id INT NOT NULL,
+    phone VARCHAR(25) NOT NULL,
+    PRIMARY KEY (chain_id, phone),
+    FOREIGN KEY (chain_id) REFERENCES hotel_chain(chain_id) ON DELETE CASCADE
+);
+
+-- HOTEL TABLES
+
+CREATE TABLE hotel (
+
+    hotel_id SERIAL PRIMARY KEY,
+	chain_id INT NOT NULL,
+	hotel_name VARCHAR(100) NOT NULL,
+	rating INT NOT NULL CHECK (rating BETWEEN 1 AND 5),
+	address VARCHAR(255) NOT NULL,
+	city VARCHAR(100) NOT NULL,
+	area VARCHAR(100) NOT NULL,
+	room_num INT NOT NULL CHECK (room_num > 0),
+	manager_id INT UNIQUE,
+	FOREIGN KEY (chain_id) REFERENCES hotel_chain(chain_id) ON DELETE CASCADE
+    --FOREIGN KEY (manager_id) REFERENCES employees(
+);
+
+CREATE TABLE hotel_email (
+    hotel_id INT NOT NULL,
+	email VARCHAR(100) NOT NULL,
+	PRIMARY KEY (hotel_id, email),
+	FOREIGN KEY (hotel_id) REFERENCES hotel(hotel_id) ON DELETE CASCADE
+	
+);
+
+CREATE TABLE hotel_phone (
+    hotel_id INT NOT NULL,
+	phone VARCHAR(100) NOT NULL,
+	PRIMARY KEY (hotel_id, phone),
+	FOREIGN KEY (hotel_id) REFERENCES hotel(hotel_id) ON DELETE CASCADE
+);
+
+
+-- CUSTOMER TABLE
+
+CREATE TABLE customer (
+    customer_id SERIAL PRIMARY KEY,
+	cust_name VARCHAR(100) NOT NULL,
+	address VARCHAR(255) NOT NULL,
+	id_type VARCHAR(50) NOT NULL,
+	id_number VARCHAR(50) NOT NULL UNIQUE,
+	registration_date DATE NOT NULL DEFAULT CURRENT_DATE
+);
+
+-- EMPLOYEE TABLE
+
+CREATE TABLE employee (
+    employee_id SERIAL PRIMARY KEY,
+	hotel_id INT NOT NULL,
+	emp_name VARCHAR(100) NOT NULL,
+	address VARCHAR(255) NOT NULL,
+	sin VARCHAR(50) NOT NULL UNIQUE,
+	FOREIGN KEY (hotel_id) REFERENCES hotel(hotel_id) ON DELETE CASCADE
+);
+
+-- ROLE TABLE ALLOWS DIFFERENT POSITIONS FOR A GIVEN EMPLOYEE
+
+CREATE TABLE employee_role (
+    employee_id INT NOT NULL,
+    role_name VARCHAR(50) NOT NULL,
+    PRIMARY KEY (employee_id, role_name),
+    FOREIGN KEY (employee_id) REFERENCES employee(employee_id) ON DELETE CASCADE
+);
+
+ALTER TABLE hotel
+ADD CONSTRAINT fk_hotel_manager
+FOREIGN KEY (manager_id) REFERENCES employee(employee_id) ON DELETE SET NULL;
+
+
+-- ROOM TABLE
+
+CREATE TABLE room (
+    room_id SERIAL PRIMARY KEY,
+	hotel_id INT NOT NULL,
+	room_number VARCHAR(50) NOT NULL,
+	price FLOAT NOT NULL CHECK (price > 0),
+	capacity VARCHAR(50) NOT NULL,
+	view_type VARCHAR(50) CHECK (view_type IN ('sea', 'mountain', 'none')),
+	extendable BOOLEAN NOT NULL DEFAULT FALSE,
+	problems TEXT,
+	is_active BOOLEAN NOT NULL DEFAULT TRUE,
+	UNIQUE (hotel_id, room_number),
+	FOREIGN KEY (hotel_id) REFERENCES hotel(hotel_id) ON DELETE CASCADE
+);
+
+-- 	AMENITY TABLE
+
+CREATE TABLE amenity (
+    amenity_id SERIAL PRIMARY KEY,
+    amenity_name VARCHAR(50) NOT NULL UNIQUE
+);
+
+CREATE TABLE room_amenity (
+    room_id INT NOT NULL,
+	amenity_id INT NOT NULL,
+	PRIMARY KEY (room_id, amenity_id),
+	FOREIGN KEY (room_id) REFERENCES room(room_id) ON DELETE CASCADE,
+	FOREIGN KEY (amenity_id) REFERENCES amenity(amenity_id) ON DELETE CASCADE
+);
+
+-- BOOKING TABLE
+
+CREATE TABLE booking (
+    booking_id SERIAL PRIMARY KEY,
+	customer_id INT NOT NULL,
+	room_id INT NOT NULL,
+	start_date DATE NOT NULL,
+	end_date DATE NOT NULL,
+	booking_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+	status VARCHAR(20) NOT NULL DEFAULT 'Booked',
+	FOREIGN KEY (customer_id) REFERENCES customer(customer_id),
+	FOREIGN KEY (room_id) REFERENCES room(room_id)
+);
+
+-- RENTING TABLE
+
+CREATE TABLE renting (
+    renting_id SERIAL PRIMARY KEY,
+    booking_id INT,
+    customer_id INT NOT NULL,
+    room_id INT NOT NULL,
+    employee_id INT NOT NULL,
+    check_in_date DATE NOT NULL,
+    check_out_date DATE NOT NULL,
+    renting_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    status VARCHAR(20) NOT NULL DEFAULT 'Rented',
+    FOREIGN KEY (booking_id) REFERENCES booking(booking_id) ON DELETE SET NULL,
+    FOREIGN KEY (customer_id) REFERENCES customer(customer_id) ON DELETE CASCADE,
+    FOREIGN KEY (room_id) REFERENCES room(room_id) ON DELETE CASCADE,
+    FOREIGN KEY (employee_id) REFERENCES employee(employee_id) ON DELETE CASCADE,
+    CHECK (check_out_date > check_in_date)
+);
+
+-- PAYMENT TABLE 
+
+CREATE TABLE payment (
+    payment_id SERIAL PRIMARY KEY,
+    renting_id INT NOT NULL,
+    payment_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    amount DECIMAL(10,2) NOT NULL CHECK (amount > 0),
+    payment_method VARCHAR(50) NOT NULL,
+    FOREIGN KEY (renting_id) REFERENCES renting(renting_id) ON DELETE CASCADE
+);
+
+-- POPULATING DATABASE
+
+INSERT INTO hotel_chain (chain_name, central_office_address) VALUES
+('Marriott', '123 Head Office St, Toronto, ON'),
+('Hilton', '200 Corporate Ave, New York, NY'),
+('Hyatt', '55 Grand Blvd, Chicago, IL'),
+('Fairmont', '900 Luxury Rd, Montreal, QC'),
+('Sheraton', '777 Business St, Vancouver, BC');
+
+INSERT INTO hotel_chain_email (chain_id, email) VALUES 
+(1, 'contact@marriott.com'),
+(1, 'support@marriott.com'),
+(2, 'contact@hilton.com'),
+(2, 'support@hilton.com'),
+(3, 'contact@hyatt.com'),
+(3, 'support@hyatt.com'),
+(4, 'contact@fairmont.com'),
+(4, 'support@fairmont.com'),
+(5, 'contact@sheraton.com'),
+(5, 'support@sheraton.com');
+
+INSERT INTO hotel_chain_phone (chain_id, phone) VALUES
+(1, '416-555-1001'),
+(1, '416-555-1002'),
+(2, '212-555-2001'),
+(2, '212-555-2002'),
+(3, '312-555-3001'),
+(3, '312-555-3002'),
+(4, '514-555-4001'),
+(4, '514-555-4002'),
+(5, '604-555-5001'),
+(5, '604-555-5002');
+
+INSERT INTO hotel (chain_id, hotel_name, rating, address, city, area, room_num) VALUES
+(1, 'Marriott Ottawa Downtown', 4, '100 Rideau St', 'Ottawa', 'Downtown', 120),
+(1, 'Marriott Ottawa Airport', 3, '200 Airport Rd', 'Ottawa', 'South Keys', 90),
+(1, 'Marriott Toronto Centre', 5, '300 King St W', 'Toronto', 'Downtown', 200),
+(1, 'Marriott Toronto East', 3, '400 Danforth Ave', 'Toronto', 'East York', 110),
+(1, 'Marriott Montreal Central', 4, '500 Rene-Levesque Blvd', 'Montreal', 'Downtown', 140),
+(1, 'Marriott Vancouver Harbour', 5, '600 Waterfront Rd', 'Vancouver', 'Harbour', 180),
+(1, 'Marriott Calgary Plaza', 3, '700 8 Ave SW', 'Calgary', 'Downtown', 95),
+(1, 'Marriott New York Midtown', 4, '800 5th Ave', 'New York', 'Midtown', 210),
+(2, 'Hilton Toronto Downtown', 4, '145 Richmond St W', 'Toronto', 'Downtown', 600),
+(2, 'Hilton Toronto Airport', 3, '5875 Airport Rd', 'Mississauga', 'Airport', 420),
+(2, 'Hilton Vancouver Downtown', 4, '433 Robson St', 'Vancouver', 'Downtown', 350),
+(2, 'Hilton Montreal Centre', 4, '1240 Rue Drummond', 'Montreal', 'Downtown', 300),
+(2, 'Hilton Calgary Downtown', 3, '221 8 Ave SW', 'Calgary', 'Downtown', 280),
+(2, 'Hilton Ottawa Parliament', 5, '100 Queen St', 'Ottawa', 'Downtown', 210),
+(2, 'Hilton Halifax Harbour', 4, '1960 Brunswick St', 'Halifax', 'Waterfront', 200),
+(2, 'Hilton Quebec City Centre', 3, '1100 Rene-Levesque Blvd', 'Quebec City', 'Downtown', 190),
+(3, 'Hyatt Regency Toronto', 4, '370 King St W', 'Toronto', 'Entertainment District', 394),
+(3, 'Hyatt Vancouver Waterfront', 5, '655 Burrard St', 'Vancouver', 'Waterfront', 450),
+(3, 'Hyatt Montreal Downtown', 4, '1255 Jeanne-Mance St', 'Montreal', 'Downtown', 320),
+(3, 'Hyatt Calgary Centre', 3, '700 Centre St S', 'Calgary', 'Downtown', 280),
+(3, 'Hyatt Ottawa Market', 4, '80 ByWard Market Sq', 'Ottawa', 'ByWard Market', 200),
+(3, 'Hyatt Halifax Downtown', 3, '1875 Barrington St', 'Halifax', 'Downtown', 170),
+(3, 'Hyatt Edmonton Plaza', 4, '10111 Bellamy Hill', 'Edmonton', 'Downtown', 250),
+(3, 'Hyatt Winnipeg City Centre', 3, '360 Main St', 'Winnipeg', 'Downtown', 180),
+(4, 'Fairmont Royal York', 5, '100 Front St W', 'Toronto', 'Downtown', 1343),
+(4, 'Fairmont Chateau Laurier', 5, '1 Rideau St', 'Ottawa', 'Downtown', 429),
+(4, 'Fairmont Hotel Vancouver', 5, '900 W Georgia St', 'Vancouver', 'Downtown', 557),
+(4, 'Fairmont Banff Springs', 5, '405 Spray Ave', 'Banff', 'Resort Area', 764),
+(4, 'Fairmont Palliser', 4, '133 9 Ave SW', 'Calgary', 'Downtown', 407),
+(4, 'Fairmont The Queen Elizabeth', 5, '900 Rene-Levesque Blvd W', 'Montreal', 'Downtown', 950),
+(4, 'Fairmont Le Chateau Frontenac', 5, '1 Rue des Carrieres', 'Quebec City', 'Old Quebec', 611),
+(4, 'Fairmont Empress', 5, '721 Government St', 'Victoria', 'Harbour', 464),
+(5, 'Sheraton Centre Toronto', 4, '123 Queen St W', 'Toronto', 'Downtown', 1372),
+(5, 'Sheraton Ottawa Hotel', 4, '150 Albert St', 'Ottawa', 'Downtown', 236),
+(5, 'Sheraton Vancouver Wall Centre', 4, '1000 Burrard St', 'Vancouver', 'Downtown', 746),
+(5, 'Sheraton Montreal Centre', 4, '1201 Rene-Levesque Blvd W', 'Montreal', 'Downtown', 825),
+(5, 'Sheraton Calgary Eau Claire', 4, '255 Barclay Parade SW', 'Calgary', 'Downtown', 323),
+(5, 'Sheraton Halifax Harbour', 3, '1919 Upper Water St', 'Halifax', 'Waterfront', 200),
+(5, 'Sheraton Edmonton Downtown', 4, '10235 101 St', 'Edmonton', 'Downtown', 416),
+(5, 'Sheraton Winnipeg Airport', 3, '2000 Wellington Ave', 'Winnipeg', 'Airport', 210);
+
+INSERT INTO room (hotel_id, room_number, price, capacity, view_type, extendable, problems)
+SELECT hotel_id, '101', 120.00, 'Single', 'none', FALSE, NULL
+FROM hotel;
+
+INSERT INTO room (hotel_id, room_number, price, capacity, view_type, extendable, problems)
+SELECT hotel_id, '102', 150.00, 'Double', 'sea', TRUE, NULL
+FROM hotel;
+
+INSERT INTO room (hotel_id, room_number, price, capacity, view_type, extendable, problems)
+SELECT hotel_id, '103', 180.00, 'Triple', 'mountain', TRUE, NULL
+FROM hotel;
+
+INSERT INTO room (hotel_id, room_number, price, capacity, view_type, extendable, problems)
+SELECT hotel_id, '104', 250.00, 'Suite', 'sea', TRUE, 'Flooring cracks'
+FROM hotel;
+
+INSERT INTO room (hotel_id, room_number, price, capacity, view_type, extendable, problems)
+SELECT hotel_id, '105', 300.00, 'Family', 'none', TRUE, 'Wall paint scratch'
+FROM hotel;
+
+INSERT INTO room (hotel_id, room_number, price, capacity, view_type, extendable, problems)
+SELECT hotel_id, '201', 125.00, 'Single', 'none', FALSE, NULL
+FROM hotel;
+
+INSERT INTO room (hotel_id, room_number, price, capacity, view_type, extendable, problems)
+SELECT hotel_id, '202', 155.00, 'Double', 'sea', TRUE, NULL
+FROM hotel;
+
+INSERT INTO room (hotel_id, room_number, price, capacity, view_type, extendable, problems)
+SELECT hotel_id, '203', 185.00, 'Triple', 'mountain', TRUE, NULL
+FROM hotel;
+
+INSERT INTO room (hotel_id, room_number, price, capacity, view_type, extendable, problems)
+SELECT hotel_id, '204', 255.00, 'Suite', 'sea', FALSE, 'Heating issues'
+FROM hotel;
+
+INSERT INTO room (hotel_id, room_number, price, capacity, view_type, extendable, problems)
+SELECT hotel_id, '205', 305.00, 'Family', 'none', TRUE, NULL
+FROM hotel;
+
+INSERT INTO room (hotel_id, room_number, price, capacity, view_type, extendable, problems)
+SELECT hotel_id, '301', 1300.00, 'Single', 'none', FALSE, NULL
+FROM hotel;
+
+INSERT INTO room (hotel_id, room_number, price, capacity, view_type, extendable, problems)
+SELECT hotel_id, '302', 1600.00, 'Double', 'sea', FALSE, 'water leak'
+FROM hotel;
+
+INSERT INTO room (hotel_id, room_number, price, capacity, view_type, extendable, problems)
+SELECT hotel_id, '303', 1900.00, 'Triple', 'mountain', TRUE, NULL
+FROM hotel;
+
+INSERT INTO room (hotel_id, room_number, price, capacity, view_type, extendable, problems)
+SELECT hotel_id, '304', 2000.00, 'Suite', 'sea', TRUE, NULL
+FROM hotel;
+
+INSERT INTO room (hotel_id, room_number, price, capacity, view_type, extendable, problems)
+SELECT hotel_id, '305', 2100.00, 'Family', 'none', TRUE, 'AC not working'
+FROM hotel;
+
+INSERT INTO amenity (amenity_name) VALUES
+('TV'),
+('WiFi'),
+('Fridge'),
+('AC'),
+('Balcony'),
+('Sauna'),
+('Hot Tub');
+
+-- To decide which rooms get which amenities
+
+-- All rooms get TV and Wifi by default
+INSERT INTO room_amenity (room_id, amenity_id)
+SELECT room_id, 1 FROM room;
+
+INSERT INTO room_amenity (room_id, amenity_id)
+SELECT room_id, 2 FROM room;
+
+-- Specific rooms get AC
+INSERT INTO room_amenity (room_id, amenity_id)
+SELECT room_id, 4
+FROM room
+WHERE room_number IN ('102', '103', '104', '105','202', '203', '204', '205', '301', '302', '303', '304', '305');
+
+-- Specific rooms get a fridge
+INSERT INTO room_amenity (room_id, amenity_id)
+SELECT room_id, 3
+FROM room
+WHERE room_number IN ('103', '104', '105', '203', '204', '205','301','302', '303', '304', '305');
+
+-- Top floor suites get a balcony and other luxury amenities
+INSERT INTO room_amenity (room_id, amenity_id)
+SELECT room_id, 5
+FROM room
+WHERE room_number IN ('301', '302', '303', '304', '305');
+INSERT INTO room_amenity (room_id, amenity_id)
+SELECT room_id, 6
+FROM room
+WHERE room_number IN ('301', '302', '303', '304', '305');
+INSERT INTO room_amenity (room_id, amenity_id)
+SELECT room_id, 7
+FROM room
+WHERE room_number IN ('301', '302', '303', '304', '305');
+
+
+
+
+
+INSERT INTO employee (hotel_id, emp_name, address, sin) VALUES
+(1, 'Sarah Johnson', '12 Bank St, Ottawa, ON', '123-456-789'),
+(1, 'Mark Evans', '14 Kent St, Ottawa, ON', '123-456-790'),
+(2, 'Linda Brown', '99 Hunt Club Rd, Ottawa, ON', '123-456-791'),
+(2, 'Adam Scott', '101 Uplands Dr, Ottawa, ON', '123-456-792'),
+(3, 'Kevin White', '200 King St W, Toronto, ON', '123-456-793'),
+(3, 'Rachel Green', '88 Front St W, Toronto, ON', '123-456-794');
+
+
+INSERT INTO employee_role (employee_id, role_name) VALUES
+(1, 'Manager'),
+(2, 'Receptionist'),
+(3, 'Manager'),
+(4, 'Receptionist'),
+(5, 'Manager'),
+(6, 'Receptionist');
+
+UPDATE hotel SET manager_id = 1 WHERE hotel_id = 1;
+UPDATE hotel SET manager_id = 3 WHERE hotel_id = 2;
+UPDATE hotel SET manager_id = 5 WHERE hotel_id = 3;
+
+
+
+-- DATABASE QUERIES
+
+--Q1: TOTAL ROOM COUNT PER HOTEL
+SELECT h.hotel_id, h.hotel_name, COUNT(r.room_id) AS total_rooms
+FROM hotel h
+LEFT JOIN room r ON h.hotel_id = r.hotel_id
+GROUP BY h.hotel_id, h.hotel_name
+ORDER BY total_rooms DESC;
+
+--Q2: EACH EMPLOYEE'S RENT COUNT
+SELECT e.emp_name, h.hotel_name, COUNT(rt.renting_id) AS rentings_handled
+FROM employee e
+JOIN hotel h ON e.hotel_id = h.hotel_id
+LEFT JOIN renting rt ON e.employee_id = rt.employee_id
+GROUP BY e.employee_id, e.emp_name, h.hotel_name
+ORDER BY rentings_handled DESC, e.emp_name;
+
+--Q3: HOTEL ROOM PRICES ABOVE AVERAGE
+SELECT h.hotel_name, AVG(r.price) AS avg_room_price
+FROM hotel h
+JOIN room r ON h.hotel_id = r.hotel_id
+GROUP BY h.hotel_id, h.hotel_name
+HAVING AVG(r.price) > (
+    SELECT AVG(price)
+    FROM room
+)
+ORDER BY avg_room_price DESC;
+
+--Q4: BOOKING/RENTINGS PER CUSTOMER
+SELECT c.cust_name,
+       COUNT(DISTINCT b.booking_id) AS total_bookings,
+       COUNT(DISTINCT rt.renting_id) AS total_rentings
+FROM customer c
+LEFT JOIN booking b ON c.customer_id = b.customer_id
+LEFT JOIN renting rt ON c.customer_id = rt.customer_id
+GROUP BY c.customer_id, c.cust_name
+ORDER BY c.cust_name;
+
+--TRIGGERS
+
+CREATE OR REPLACE FUNCTION prevent_overlapping_booking()
+RETURNS TRIGGER AS $BODY$
+BEGIN
+    IF EXISTS (
+        SELECT 1 FROM booking b WHERE b.room_id = NEW.room_id AND b.booking_id <> COALESCE(NEW.booking_id, -1) AND b.status = 'Booked' AND NEW.start_date < b.end_date AND NEW.end_date > b.start_date
+	) THEN RAISE EXCEPTION 'BOOKING OVERLAP DETECTED!';
+
+	END IF;
+	RETURN NEW;
+END;
+$BODY$ LANGUAGE plpgsql;
+
+DROP TRIGGER IF EXISTS trg_prevent_overlapping_booking ON booking;
+DROP TRIGGER IF EXISTS trg_prevent_overlapping_renting ON renting;
+
+CREATE TRIGGER trg_prevent_overlapping_booking
+BEFORE INSERT OR UPDATE ON booking
+FOR EACH ROW
+EXECUTE FUNCTION prevent_overlapping_booking();
+
+CREATE OR REPLACE FUNCTION prevent_overlapping_renting()
+RETURNS TRIGGER AS $BODY$
+BEGIN
+    IF EXISTS (
+	    SELECT 1 FROM renting r WHERE r.room_id = NEW.room_id  AND r.renting_id <> COALESCE(NEW.renting_id, -1) AND r.status = 'Active' AND NEW.check_in_date < r.check_out_date AND NEW.check_out_date > r.check_in_date
+	) THEN RAISE EXCEPTION 'RENTING OVERLAP DETECTED!';
+
+	END IF;
+	RETURN NEW;
+END;
+$BODY$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trg_prevent_overlapping_renting
+BEFORE INSERT OR UPDATE ON renting
+FOR EACH ROW
+EXECUTE FUNCTION prevent_overlapping_renting();
+
+-- INDEX 1:
+CREATE INDEX index_room_hotel_id
+ON room(hotel_id);
+
+-- index chosen since joining rooms to hotels happen often
+-- using this index the room counts become faster
+-- all queries parsing rooms specific to a hotel use this
+
+-- INDEX 2:
+CREATE INDEX index_booking_room_dates
+ON booking(room_id, start_date, end_date);
+
+-- the trigger checking booking overlaps checks the room id start date and end date
+-- queries responsible for searching room availability use this index
+-- overlap checks become much faster
+
+-- INDEX 3:
+CREATE INDEX index_renting_room_dates
+ON renting(room_id, check_in_date, check_out_date);
+
+-- the trigger checking renting operlaps checks the room id check in date and the check out date
+-- queries responsible for searching room availability use this index
+-- overlap checks become much faster
+
+-- INDEX 4:
+CREATE INDEX index_hotel_city_rating
+ON hotel(city, rating);
+
+-- index allows users to search by city and hotel rating
+-- queries checking room availablity filters by city
+-- speeds up the filtering process for the app
+
+CREATE VIEW available_rooms_per_area AS
+  SELECT h.area, COUNT(r.room_id) AS available_rooms
+  FROM hotel h JOIN room r ON h.hotel_id = r.hotel_id WHERE r.room_id NOT IN (SELECT b.room_id FROM booking b WHERE b.status = 'Booked' AND CURRENT_DATE >= b.start_date AND CURRENT_DATE < b.end_date)
+  AND r.room_id NOT IN (SELECT rt.room_id FROM renting rt WHERE rt.status = 'ACTIVE' AND CURRENT_DATE >= rt.check_in_date AND CURRENT_DATE < rt.check_out_date)
+  GROUP BY h.area
+  ORDER BY h.area;
+
+
+CREATE VIEW hotel_total_capacity AS
+  SELECT h.hotel_id, h.hotel_name, SUM(CASE r.capacity WHEN 'Single' THEN 1 WHEN 'Double' THEN 2 WHEN 'Triple' THEN 3 WHEN 'Suite' THEN 4 WHEN 'Family' THEN 5 ELSE 0 END)
+  AS total_capacity FROM hotel h JOIN room r ON h.hotel_id = r.hotel_id GROUP BY h.hotel_id, h.hotel_name ORDER BY h.hotel_id;
+
+
+
+
